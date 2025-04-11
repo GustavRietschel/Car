@@ -1,0 +1,8 @@
+/.pio
+/.vscode
+/build
+/sdkconfig
+/sdkconfig.old
+/sdkconfig.esp32dev
+/CMakeLists.txt
+.DS_Store
