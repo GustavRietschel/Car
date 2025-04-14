@@ -33,7 +33,7 @@ void ESP_NOW::start(onDataSend sendCb, onDataReceive receiveCb) {
 
 void ESP_NOW::addNewESP(uint8_t macAddr[6]) 
 {
-    esp_now_peer_info peer_info = {0};
+    esp_now_peer_info_t peer_info = {0};
     peer_info.channel = 1;
     peer_info.encrypt = false;
     memcpy(peer_info.peer_addr, macAddr, 6);
@@ -42,5 +42,9 @@ void ESP_NOW::addNewESP(uint8_t macAddr[6])
 
 void ESP_NOW::sendData(uint8_t macAddr[6], const void* data, size_t len)
 {
-    ESP_ERROR_CHECK(esp_now_send(macAddr, reinterpret_cast<const uint8_t*>(data), len));
+    esp_err_t result = esp_now_send(macAddr, reinterpret_cast<const uint8_t*>(data), len);
+    if (result != ESP_OK) {
+        // Fehlercode ausgeben
+        printf("Fehler beim Senden: %s\n", esp_err_to_name(result));
+    };
 }
