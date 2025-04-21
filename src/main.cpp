@@ -43,7 +43,7 @@ void onDataReceived(const esp_now_recv_info_t *esp_now_info, const uint8_t *data
 extern "C" void app_main(void) 
 {
 
-    Motor motor(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM0A, 19);
+    Motor motor(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM0A, 18);
 
     if(!motor.init()) 
     {
@@ -67,7 +67,7 @@ extern "C" void app_main(void)
 
     while(1) 
     {
-
+        
         motor.setSpeed(receivedData.xValue);
 
         carData.dummySpeed = rand() % 201;
