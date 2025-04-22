@@ -1,6 +1,7 @@
 #include "connections.h"
-#include <iostream>
 #include "motor.h"
+#include "DS18B20.h"
+
 
 #include <stdlib.h>
 #include <time.h>
@@ -18,7 +19,7 @@ typedef struct joystickData
 typedef struct carData 
 {
     int dummyTemp;
-    int dummySpeed;
+    float speed;
 } carData;
 
 joystickData receivedData;
@@ -43,7 +44,8 @@ void onDataReceived(const esp_now_recv_info_t *esp_now_info, const uint8_t *data
 extern "C" void app_main(void) 
 {
 
-    Motor motor(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM0A, 18);
+    Motor motor(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM0A, 18, GPIO_NUM_21);
+    DS18B20 ds18b20(GPIO_NUM_4);
 
     if(!motor.init()) 
     {
@@ -57,7 +59,7 @@ extern "C" void app_main(void)
     // Creating Dummy Data to send to the controller 
     carData carData;
 
-    carData.dummySpeed = 0;
+    carData.speed = 0;
     carData.dummyTemp = 20;
 
 
@@ -67,15 +69,17 @@ extern "C" void app_main(void)
 
     while(1) 
     {
-        
+        ds18b20.requestTemp();
+        float temp = ds18b20.readTemp();
+        printf("Temp: %.2f °C\n", temp);
         motor.setSpeed(receivedData.xValue);
 
-        carData.dummySpeed = rand() % 201;
+        carData.speed = motor.calculateSpeed();
         carData.dummyTemp = (rand() % 51) - 10;
-
-
+        
         // Send Dummy Data to Controller every Second
         esp_now.sendData(macAddr, &carData, sizeof(carData));
         vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
+
