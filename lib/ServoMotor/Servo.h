@@ -5,12 +5,12 @@
 
 class Servo
 {
-  public:
+public:
     Servo(int pin, int minUs = 1000, int maxUs = 2000, uint32_t freqHz = 50);
     void init();
     void write(int angle);
 
-  private:
+private:
     int pin;
     int minUs;
     int maxUs;
